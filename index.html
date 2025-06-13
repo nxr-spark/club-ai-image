@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NHMSC ICT CLUB | AI Image Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>">
+    <style>
+        :root {
+            --space-purple: #6a00ff;
+            --neon-blue: #00d4ff;
+            --deep-space: #0f0e17;
+            --cosmic-dark: #0b0a12;
+            --stellar-gray: #1e1e2e;
+            --galaxy-pink: #ff2d75;
+            --quantum-teal: #00ffcc;
+            --text-light: #fffffe;
+            --text-dim: #a7a9be;
+            --success-emerald: #00ff9d;
+            --error-crimson: #ff3860;
+            --glow-effect: 0 0 15px currentColor;
+            --space-gradient: linear-gradient(135deg, var(--space-purple) 0%, var(--neon-blue) 100%);
+            --galaxy-gradient: radial-gradient(circle at 25% 25%, var(--space-purple) 0%, var(--cosmic-dark) 70%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--cosmic-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(106, 0, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 20%);
+        }
+
+        ::selection {
+            background: var(--space-purple);
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Cosmic Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .logo {
+            height: 60px;
+            width: auto;
+            filter: drop-shadow(0 0 10px rgba(106, 0, 255, 0.7));
+            transition: transform 0.5s ease;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .club-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .club-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--space-purple), var(--neon-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .club-tagline {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-weight: 300;
+        }
+
+        /* Stellar Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 0 1rem;
+        }
+
+        .app-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--space-purple), var(--neon-blue), var(--quantum-teal));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            text-shadow: 0 0 20px rgba(106, 0, 255, 0.3);
+            position: relative;
+            animation: fadeInDown 1s both;
+        }
+
+        .app-description {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            max-width: 700px;
+            font-weight: 300;
+            animation: fadeIn 1.5s both 0.3s;
+        }
+
+        /* Quantum Generator Container */
+        .generator-container {
+            background: rgba(15, 14, 23, 0.7);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin-bottom: 3rem;
+            width: 100%;
+            max-width: 900px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(106, 0, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s both 0.5s;
+        }
+
+        .generator-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--space-purple), var(--neon-blue), var(--quantum-teal), var(--space-purple));
+            background-size: 400%;
+            z-index: -1;
+            border-radius: 22px;
+            opacity: 0.7;
+            animation: gradientBorder 8s linear infinite;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        #prompt {
+            flex: 1;
+            padding: 1.2rem 1.5rem;
+            background: rgba(30, 30, 46, 0.8);
+            border: 2px solid rgba(106, 0, 255, 0.3);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            font-weight: 300;
+        }
+
+        #prompt::placeholder {
+            color: rgba(167, 169, 190, 0.6);
+        }
+
+        #prompt:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2), 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+            background: rgba(30, 30, 46, 0.9);
+        }
+
+        #generate {
+            background: var(--space-gradient);
+            color: white;
+            border: none;
+            padding: 0 3rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 10px 20px rgba(106, 0, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        #generate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--neon-blue), var(--space-purple), var(--quantum-teal));
+            background-size: 200%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(106, 0, 255, 0.4);
+        }
+
+        #generate:hover::before {
+            opacity: 1;
+            animation: gradientBG 3s linear infinite;
+        }
+
+        #generate:active {
+            transform: translateY(0);
+        }
+
+        #generate:disabled {
+            background: var(--stellar-gray);
+            color: var(--text-dim);
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none;
+        }
+
+        #generate:disabled::before {
+            display: none;
+        }
+
+        /* Nebula Result Area */
+        .result-area {
+            position: relative;
+            margin-top: 2rem;
+            transition: all 0.5s ease;
+        }
+
+        .loading-container {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            background: rgba(30, 30, 46, 0.5);
+            margin-bottom: 2rem;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .quantum-spinner {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+        }
+
+        .quantum-spinner::before,
+        .quantum-spinner::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+            filter: blur(1px);
+        }
+
+        .quantum-spinner::before {
+            width: 100%;
+            height: 100%;
+            border: 8px solid transparent;
+            border-top-color: var(--space-purple);
+            border-bottom-color: var(--neon-blue);
+            animation-delay: 0.5s;
+        }
+
+        .quantum-spinner::after {
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 70%;
+            border: 8px solid transparent;
+            border-top-color: var(--quantum-teal);
+            border-bottom-color: var(--galaxy-pink);
+        }
+
+        .loading-text {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-weight: 300;
+            position: relative;
+        }
+
+        .loading-text::after {
+            content: '...';
+            position: absolute;
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(167, 169, 190, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: var(--space-gradient);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progressShine 2s infinite;
+        }
+
+        .result-container {
+            display: none;
+            animation: fadeInUp 0.8s both;
+        }
+
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(106, 0, 255, 0.3);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 100%;
+        }
+
+        .image-wrapper:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(106, 0, 255, 0.4);
+        }
+
+        #generated-image {
+            max-width: 100%;
+            max-height: 70vh;
+            display: block;
+            border-radius: 15px;
+            transition: transform 0.5s ease;
+        }
+
+        .image-actions {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 1rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .image-wrapper:hover .image-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .action-btn {
+            background: rgba(15, 14, 23, 0.9);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn:hover {
+            background: var(--space-purple);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(106, 0, 255, 0.4);
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Cosmic Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 3px;
+            background: var(--space-gradient);
+            border-radius: 3px;
+        }
+
+        .developer-section {
+            margin-bottom: 2.5rem;
+            animation: fadeIn 1s both 1s;
+        }
+
+        .developer-title {
+            font-size: 1rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .developer-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--space-purple), var(--neon-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-link {
+            color: var(--text-dim);
+            font-size: 1.8rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(30, 30, 46, 0.7);
+            border: 1px solid rgba(106, 0, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--space-purple), var(--neon-blue), var(--quantum-teal));
+            background-size: 400%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .social-link:hover {
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(106, 0, 255, 0.3);
+        }
+
+        .social-link:hover::before {
+            opacity: 1;
+            animation: gradientBG 3s linear infinite;
+        }
+
+        .social-link.facebook:hover {
+            color: #1877f2;
+        }
+
+        .social-link.instagram:hover {
+            color: #e4405f;
+        }
+
+        .copyright {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* Stellar Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle linear infinite;
+        }
+
+        /* Quantum Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--stellar-gray);
+            color: white;
+            padding: 1.2rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            transform: translateX(200%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(106, 0, 255, 0.3);
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            border-radius: 5px 0 0 5px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 5px solid var(--success-emerald);
+        }
+
+        .toast.error {
+            border-left: 5px solid var(--error-crimson);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success-emerald);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--error-crimson);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-weight: 300;
+        }
+
+        .close-toast {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            margin-left: 1rem;
+        }
+
+        .close-toast:hover {
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes gradientBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .app-title {
+                font-size: 2.8rem;
+            }
+            
+            .generator-container {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .app-title {
+                font-size: 2.2rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            #generate {
+                padding: 1.2rem;
+                justify-content: center;
+            }
+            
+            .social-links {
+                gap: 1.5rem;
+            }
+            
+            .social-link {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .app-title {
+                font-size: 1.8rem;
+            }
+            
+            .app-description {
+                font-size: 1rem;
+            }
+            
+            .generator-container {
+                padding: 1.5rem;
+            }
+            
+            .developer-name {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Particles Background -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="logo.png" alt="NHMSC ICT Club Logo" class="logo">
+                <div class="club-info">
+                    <div class="club-name">NHMSC ICT CLUB</div>
+                    <div class="club-tagline">Innovating the Future with Technology</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <h1 class="app-title animate__animated animate__fadeInDown">AI Image Generator</h1>
+            <p class="app-description">Transform your imagination into stunning cosmic visuals with our quantum-powered AI technology</p>
+
+            <div class="generator-container animate__animated animate__fadeInUp">
+                <div class="input-group">
+                    <input type="text" id="prompt" placeholder="Describe your cosmic vision... (e.g. 'A nebula with purple and blue energy waves')">
+                    <button id="generate">
+                        <i class="fas fa-stars"></i> Generate Art
+                    </button>
+                </div>
+
+                <div class="loading-container" id="loading">
+                    <div class="quantum-spinner"></div>
+                    <p class="loading-text">Quantum rendering in progress</p>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                </div>
+
+                <div class="result-area">
+                    <div class="result-container" id="result-container">
+                        <div class="image-wrapper">
+                            <img id="generated-image" src="" alt="Generated AI Image">
+                            <div class="image-actions">
+                                <button class="action-btn" id="download-btn" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="action-btn" id="share-btn" title="Share">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="action-btn" id="like-btn" title="Like">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="developer-section">
+                <div class="developer-title">CREATED BY</div>
+                <div class="developer-name">Rizwan Ahmed</div>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/share/1UphXwVcxi/" class="social-link facebook" target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/zyssimple/" class="social-link instagram" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+            <p class="copyright">© 2025 NHMSC ICT Club. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Quantum Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">
+            <i class="fas fa-check-circle" id="toast-icon"></i>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title" id="toast-title">Success</div>
+            <div class="toast-message" id="toast-message">Image generated successfully!</div>
+        </div>
+        <button class="close-toast" id="close-toast">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const button = document.getElementById('generate');
+            const promptInput = document.getElementById('prompt');
+            const resultContainer = document.getElementById('result-container');
+            const generatedImage = document.getElementById('generated-image');
+            const downloadBtn = document.getElementById('download-btn');
+            const shareBtn = document.getElementById('share-btn');
+            const likeBtn = document.getElementById('like-btn');
+            const loadingContainer = document.getElementById('loading');
+            const progressBar = document.getElementById('progress');
+            const toast = document.getElementById('toast');
+            const closeToast = document.getElementById('close-toast');
+            const particlesContainer = document.getElementById('particles');
+            
+            // Create cosmic particles
+            function createParticles() {
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Random size between 1px and 3px
+                    const size = Math.random() * 2 + 1;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // Random position
+                    particle.style.left = `${Math.random() * 100}vw`;
+                    particle.style.top = `${Math.random() * 100}vh`;
+                    
+                    // Random animation duration between 10s and 20s
+                    const duration = Math.random() * 10 + 10;
+                    particle.style.animationDuration = `${duration}s`;
+                    
+                    // Random delay
+                    particle.style.animationDelay = `${Math.random() * 5}s`;
+                    
+                    // Random opacity
+                    particle.style.opacity = Math.random() * 0.5 + 0.1;
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
+            createParticles();
+            
+            // Show toast notification
+            function showToast(title, message, type = 'success') {
+                const toastIcon = document.getElementById('toast-icon');
+                const toastTitle = document.getElementById('toast-title');
+                const toastMessage = document.getElementById('toast-message');
+                
+                // Set content
+                toastTitle.textContent = title;
+                toastMessage.textContent = message;
+                
+                // Set icon and type
+                if (type === 'success') {
+                    toastIcon.className = 'fas fa-check-circle';
+                    toast.classList.add('success');
+                    toast.classList.remove('error');
+                } else {
+                    toastIcon.className = 'fas fa-exclamation-circle';
+                    toast.classList.add('error');
+                    toast.classList.remove('success');
+                }
+                
+                // Show toast
+                toast.classList.add('show');
+                
+                // Auto hide after 5 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            }
+            
+            // Close toast
+            closeToast.addEventListener('click', () => {
+                toast.classList.remove('show');
+            });
+            
+            // Download image
+            function downloadImage() {
+                if (!generatedImage.src) return;
+                
+                const link = document.createElement('a');
+                link.href = generatedImage.src;
+                link.download = `ai-art-${Date.now()}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Download Started', 'Your cosmic artwork is being downloaded', 'success');
+            }
+            
+            // Share image
+            function shareImage() {
+                if (!generatedImage.src) return;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Check out my AI-generated artwork!',
+                        text: 'I created this using NHMSC ICT Club AI Image Generator',
+                        url: generatedImage.src
+                    }).catch(err => {
+                        showToast('Share Error', 'Could not share at this time', 'error');
+                    });
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    prompt('Copy this link to share:', generatedImage.src);
+                }
+            }
+            
+            // Like image
+            function likeImage() {
+                likeBtn.innerHTML = '<i class="fas fa-heart"></i>';
+                likeBtn.style.color = '#ff2d75';
+                likeBtn.style.transform = 'scale(1.2)';
+                
+                setTimeout(() => {
+                    likeBtn.style.transform = 'scale(1)';
+                }, 300);
+                
+                showToast('Artwork Liked', 'Your appreciation has been recorded', 'success');
+            }
+            
+            // Event listeners
+            downloadBtn.addEventListener('click', downloadImage);
+            shareBtn.addEventListener('click', shareImage);
+            likeBtn.addEventListener('click', likeImage);
+            
+            // Generate image
+            button.addEventListener('click', async () => {
+                const prompt = promptInput.value.trim();
+                
+                if (!prompt) {
+                    showToast('Input Required', 'Please describe your cosmic vision', 'error');
+                    promptInput.focus();
+                    return;
+                }
+                
+                // Show loading, hide result
+                loadingContainer.style.display = 'flex';
+                resultContainer.style.display = 'none';
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-atom fa-spin"></i> Generating...';
+                
+                // Simulate progress (since we can't track actual API progress)
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 10;
+                    if (progress > 90) progress = 90; // Don't go to 100% until done
+                    progressBar.style.width = `${progress}%`;
+                }, 300);
+                
+                try {
+                    // The API URL with prompt parameter
+                    const apiUrl = `https://bj-devs.serv00.net/v1/text-to-image.php?prompt=${encodeURIComponent(prompt)}`;
+                    
+                    // Create an image element to load the generated image
+                    const img = new Image();
+                    
+                    img.onload = function() {
+                        clearInterval(progressInterval);
+                        progressBar.style.width = '100%';
+                        
+                        setTimeout(() => {
+                            generatedImage.src = this.src;
+                            resultContainer.style.display = 'block';
+                            loadingContainer.style.display = 'none';
+                            button.disabled = false;
+                            button.innerHTML = '<i class="fas fa-stars"></i> Generate Art';
+                            
+                            // Scroll to result
+                            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            
+                            showToast('Cosmic Art Ready!', 'Your AI-generated masterpiece is complete', 'success');
+                        }, 500);
+                    };
+                    
+                    img.onerror = function() {
+                        clearInterval(progressInterval);
+                        loadingContainer.style.display = 'none';
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-stars"></i> Generate Art';
+                        showToast('Generation Failed', 'The quantum fields are unstable. Try again.', 'error');
+                    };
+                    
+                    img.src = apiUrl;
+                    
+                } catch (error) {
+                    console.error('Quantum Error:', error);
+                    clearInterval(progressInterval);
+                    loadingContainer.style.display = 'none';
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-stars"></i> Generate Art';
+                    showToast('Quantum Flux', 'An anomaly occurred in the AI matrix', 'error');
+                }
+            });
+            
+            // Allow pressing Enter key to generate
+            promptInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    button.click();
+                }
+            });
+            
+            // Initial animation for input focus
+            setTimeout(() => {
+                promptInput.focus();
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
